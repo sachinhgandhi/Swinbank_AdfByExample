@@ -1,0 +1,9 @@
+{
+	"name": "swinbank-adfbyexample2023-adf",
+	"location": "southeastasia",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "fc10362c-237d-4983-8080-bfa5f344f9b0",
+		"tenantId": "e1daa3d7-ec56-4df6-891a-8c7297f8edb1"
+	}
+}
