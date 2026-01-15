@@ -1,6 +1,7 @@
 {
 	"name": "DestinationDataset_029",
 	"properties": {
+		"description": "Test",
 		"linkedServiceName": {
 			"referenceName": "swin_adfbyexapmple2013_ls",
 			"type": "LinkedServiceReference"
