@@ -30,7 +30,7 @@
 					},
 					"sink": {
 						"type": "AzureSqlSink",
-						"preCopyScript": "TRUNCATE TABLE dbo.Sales_LOAD",
+						"preCopyScript": "TRUNCATE TABLE dbo.SalesLOAD",
 						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false,
 						"disableMetricsCollection": false
@@ -47,13 +47,13 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "ABS_CSV_SweetTreats",
+						"referenceName": "Source_CSV_SweetTreats_ds",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "ASQL_dboSalesLoad",
+						"referenceName": "Sink_SQL_SalesLoad_ds",
 						"type": "DatasetReference"
 					}
 				]
