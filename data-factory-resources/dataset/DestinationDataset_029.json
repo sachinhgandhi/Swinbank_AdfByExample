@@ -1,0 +1,17 @@
+{
+	"name": "DestinationDataset_029",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "swin_adfbyexapmple2013_ls",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"container": "sampledata"
+			}
+		}
+	}
+}
