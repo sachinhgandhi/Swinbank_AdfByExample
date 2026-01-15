@@ -1,5 +1,5 @@
 {
-	"name": "Sourece_CSV_SweetTreats_ds",
+	"name": "Source_CSV_SweetTreats_ds",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "swin_adfbyexapmple2013_ls",
