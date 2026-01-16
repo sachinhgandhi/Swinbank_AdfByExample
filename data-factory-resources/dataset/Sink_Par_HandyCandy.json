@@ -1,0 +1,24 @@
+{
+	"name": "Sink_Par_HandyCandy",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "swin_adfbyexapmple2013_ls",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Chapter3"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "HandyCandy.parquet",
+				"folderPath": "datalake",
+				"container": "output"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	}
+}
