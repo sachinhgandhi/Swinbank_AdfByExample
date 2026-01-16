@@ -21,7 +21,7 @@
 							"type": "AzureBlobStorageReadSettings",
 							"recursive": true,
 							"wildcardFolderPath": "Azure-Data-Factory-by-Example-Second-Edition-main/SampleData/HandyCandy",
-							"wildcardFileName": ".json",
+							"wildcardFileName": "*.json",
 							"enablePartitionDiscovery": false
 						},
 						"formatSettings": {
@@ -44,18 +44,29 @@
 						"mappings": [
 							{
 								"source": {
-									"path": "$['Month']"
+									"path": "$['TransactionId']"
 								},
 								"sink": {
-									"name": "Month"
+									"name": "TransactionId",
+									"type": "Guid"
 								}
 							},
 							{
 								"source": {
-									"path": "$['Company']"
+									"path": "$['TransactionDate']"
 								},
 								"sink": {
-									"name": "Company"
+									"name": "TransactionDate",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"path": "$['StoreId']"
+								},
+								"sink": {
+									"name": "StoreId",
+									"type": "Int16"
 								}
 							},
 							{
@@ -63,35 +74,21 @@
 									"path": "['Product']"
 								},
 								"sink": {
-									"name": "Product"
+									"name": "Product",
+									"type": "String"
 								}
 							},
 							{
 								"source": {
-									"path": "['ManufacturerProductCode']"
+									"path": "['Price']"
 								},
 								"sink": {
-									"name": "ManufacturerProductCode"
-								}
-							},
-							{
-								"source": {
-									"path": "['Units']"
-								},
-								"sink": {
-									"name": "Units"
-								}
-							},
-							{
-								"source": {
-									"path": "['Value']"
-								},
-								"sink": {
-									"name": "Value"
+									"name": "Price",
+									"type": "Single"
 								}
 							}
 						],
-						"collectionReference": "$['Sales']"
+						"collectionReference": "$['Items']"
 					}
 				},
 				"inputs": [
