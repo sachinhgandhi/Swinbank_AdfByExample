@@ -1,0 +1,45 @@
+{
+	"name": "Source_JSON_Par_ds",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Swin_adf2023_KeyVault_ls",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"p_ds_Container": {
+				"type": "string"
+			},
+			"p_ds_Directory": {
+				"type": "string",
+				"defaultValue": "."
+			},
+			"p_ds_File": {
+				"type": "string",
+				"defaultValue": "."
+			}
+		},
+		"folder": {
+			"name": "Chapter5"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@dataset().p_ds_File",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().p_ds_Directory",
+					"type": "Expression"
+				},
+				"container": {
+					"value": "@dataset().p_ds_Container",
+					"type": "Expression"
+				}
+			}
+		},
+		"schema": {}
+	}
+}
