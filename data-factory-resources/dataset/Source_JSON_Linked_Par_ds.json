@@ -1,0 +1,54 @@
+{
+	"name": "Source_JSON_Linked_Par_ds",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AnyBlobStorage_LS",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"ConnectionSecretName": {
+					"value": "@dataset().p_ds_ConnectionSecretName",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"p_ds_Container": {
+				"type": "string"
+			},
+			"p_ds_Directory": {
+				"type": "string",
+				"defaultValue": "."
+			},
+			"p_ds_File": {
+				"type": "string",
+				"defaultValue": "."
+			},
+			"p_ds_ConnectionSecretName": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "Chapter5"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@dataset().p_ds_File",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().p_ds_Directory",
+					"type": "Expression"
+				},
+				"container": {
+					"value": "@dataset().p_ds_Container",
+					"type": "Expression"
+				}
+			}
+		},
+		"schema": {}
+	}
+}
