@@ -1,0 +1,25 @@
+{
+	"name": "AnyBlobStorage_LS",
+	"properties": {
+		"parameters": {
+			"ConnectionSecretName": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "AzureBlobStorage",
+		"typeProperties": {
+			"connectionString": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "Swin_adf2023_KV_ls",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": {
+					"value": "@linkedService().ConnectionSecretName",
+					"type": "Expression"
+				}
+			}
+		}
+	}
+}
