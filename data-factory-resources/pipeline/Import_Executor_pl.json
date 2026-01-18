@@ -1,0 +1,109 @@
+{
+	"name": "Import_Executor_pl",
+	"properties": {
+		"activities": [
+			{
+				"name": "Import Sweet Treat Data",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Import_SweetTreats_ST_Audit_pl",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"p_pl_WildcardFolderPath": "Azure-Data-Factory-by-Example-Second-Edition-main/SampleData/SweetTreats"
+					}
+				}
+			},
+			{
+				"name": "Import Dessert Data",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Set Pipeline 1 Return Value",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Import_SweetTreats_ST_Audit_pl",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"p_pl_WildcardFolderPath": "Azure-Data-Factory-by-Example-Second-Edition-main/SampleData/Desserts4All"
+					}
+				}
+			},
+			{
+				"name": "Set Pipeline 2 Return Value",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Import Dessert Data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "var_pl_ReturnedValue",
+					"value": {
+						"value": "@activity('Import Dessert Data').output.pipelineReturnValue.PipelineRunSeqNo_return",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set Pipeline 1 Return Value",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Import Sweet Treat Data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "var_pl_ReturnedValue",
+					"value": {
+						"value": "@activity('Import Sweet Treat Data').output.pipelineReturnValue.PipelineRunSeqNo_return",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"variables": {
+			"var_pl_ReturnedValue": {
+				"type": "Integer"
+			}
+		},
+		"folder": {
+			"name": "Chapter5"
+		},
+		"annotations": []
+	}
+}
