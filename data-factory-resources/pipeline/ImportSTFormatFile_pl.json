@@ -1,0 +1,274 @@
+{
+	"name": "ImportSTFormatFile_pl",
+	"properties": {
+		"activities": [
+			{
+				"name": "Import sales data",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Set Run Seq Variable",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"additionalColumns": [
+							{
+								"name": "SourceFileName",
+								"value": "$$FILEPATH"
+							},
+							{
+								"name": "RunSeqNo",
+								"value": {
+									"value": "@variables('var_RunSeqNo')",
+									"type": "Expression"
+								}
+							}
+						],
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"preCopyScript": "TRUNCATE TABLE dbo.Sales_LOAD",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "Source_JSON_Linked_Par_ds",
+						"type": "DatasetReference",
+						"parameters": {
+							"p_ds_Container": "sampledata",
+							"p_ds_Directory": {
+								"value": "@pipeline().parameters.p_pl_Directory",
+								"type": "Expression"
+							},
+							"p_ds_File": {
+								"value": "@pipeline().parameters.p_pl_File",
+								"type": "Expression"
+							},
+							"p_ds_ConnectionSecretName": "StorageAccountConnectionString"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Sink_SQL_SalesLoad_ds",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Log pipeline outcome",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Import sales data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[LogPipelineEnd]",
+					"storedProcedureParameters": {
+						"FilesRead": {
+							"value": {
+								"value": "@activity('Import sales data').output.filesRead",
+								"type": "Expression"
+							},
+							"type": "Int32"
+						},
+						"RowsCopied": {
+							"value": {
+								"value": "@activity('Import sales data').output.rowsCopied",
+								"type": "Expression"
+							},
+							"type": "Int32"
+						},
+						"RowsRead": {
+							"value": {
+								"value": "@activity('Import sales data').output.rowsRead",
+								"type": "Expression"
+							},
+							"type": "Int32"
+						},
+						"RunEndDateTime": {
+							"value": {
+								"value": "@utcNow()",
+								"type": "Expression"
+							},
+							"type": "DateTime"
+						},
+						"RunSeqNo": {
+							"value": {
+								"value": "@variables('var_RunSeqNo')",
+								"type": "Expression"
+							},
+							"type": "Int32"
+						},
+						"RunStatus": {
+							"value": "Completed",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "Swin_ADFByExample_SQL_LS",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Lookup Run Seq",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[dbo].[LogPipelineStart]",
+						"storedProcedureParameters": {
+							"Comments": {
+								"type": "String",
+								"value": {
+									"value": "Pipeline @{pipeline().Pipeline} executed in @{pipeline().DataFactory} - loading file @{pipeline().parameters.p_pl_Directory}/@{pipeline().parameters.p_pl_File}",
+									"type": "Expression"
+								}
+							},
+							"PipelineRunId": {
+								"type": "Guid",
+								"value": {
+									"value": "@pipeline().RunId",
+									"type": "Expression"
+								}
+							},
+							"RunStartDateTime": {
+								"type": "DateTime",
+								"value": {
+									"value": "@utcNow()",
+									"type": "Expression"
+								}
+							}
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "Sink_SQL_SalesLoad_ds",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "Set Run Seq Variable",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Lookup Run Seq",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "var_RunSeqNo",
+					"value": {
+						"value": "@int(activity('Lookup Run Seq').output.firstRow.RunSeqNo)",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set return value",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Set Run Seq Variable",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "pipelineReturnValue",
+					"value": [
+						{
+							"key": "PipelineRunSeqNo_return",
+							"value": {
+								"type": "Expression",
+								"content": "@variables('var_RunSeqNo')"
+							}
+						}
+					],
+					"setSystemVariable": true
+				}
+			}
+		],
+		"parameters": {
+			"p_pl_Directory": {
+				"type": "string"
+			},
+			"p_pl_File": {
+				"type": "string",
+				"defaultValue": "*.csv"
+			}
+		},
+		"variables": {
+			"var_RunSeqNo": {
+				"type": "Integer",
+				"defaultValue": -1
+			}
+		},
+		"folder": {
+			"name": "Chapter6"
+		},
+		"annotations": []
+	}
+}
